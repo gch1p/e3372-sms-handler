@@ -13,13 +13,19 @@ def main():
     client = WebAPI(args.ip)
     client.auth()
 
-    messages = client.get_sms()
+    info = client.device_information()
+    signal = client.device_signal()
 
-    for m in messages:
-        print(f"phone:   {m.phone}")
-        print(f"date:    {m.date} ({m.timestamp()})")
-        print(f"content: {m.content}")
-        print('-----')
+    print(info)
+    print(signal)
+
+    # messages = client.get_sms()
+    #
+    # for m in messages:
+    #     print(f"phone:   {m.phone}")
+    #     print(f"date:    {m.date} ({m.timestamp()})")
+    #     print(f"content: {m.content}")
+    #     print('-----')
 
 
 if __name__ == '__main__':

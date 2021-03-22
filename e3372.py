@@ -28,13 +28,12 @@ class WebAPI:
         self.headers['__RequestVerificationToken'] = token
         self.headers['Content-Type'] = 'text/xml'
 
-    # def device_information(self):
-    #     response = self.request('device/information')
-    #     print(response)
-    #
-    # def device_signal(self):
-    #     response = self.request('device/signal')
-    #     print(response)
+    def device_information(self):
+        return self.request('device/information')
+
+    def device_signal(self):
+        return self.request('device/signal')
+
 
     def get_sms(self, count=10, page=1):
         request = build_request({
@@ -62,6 +61,16 @@ class WebAPI:
 
     def send_sms(self):
         pass
+
+    def dataswitch(self, on=True):
+        return self.request('dialup/mobile-dataswitch', data=build_request({
+            'dataswitch': 1 if on else 0
+        }))
+
+    def reboot(self):
+        return self.request('device/control', data=build_request({
+            'Control': 1
+        }))
 
     def request(self, endpoint: str, data=None):
         url = f'http://{self.ip}/api/{endpoint}'
