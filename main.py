@@ -16,8 +16,8 @@ def main():
     messages = client.get_sms()
 
     for m in messages:
-        print(f"phone: {m.phone}")
-        print(f"ts: {m.timestamp()}")
+        print(f"phone:   {m.phone}")
+        print(f"date:    {m.date} ({m.timestamp()})")
         print(f"content: {m.content}")
         print('-----')
 
