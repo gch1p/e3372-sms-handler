@@ -65,7 +65,7 @@ class E3372:
 
     def request(self, endpoint: str, data=None):
         url = f'http://{self.ip}/api/{endpoint}'
-        r = requests.get(url) if data is None else requests.post(url, data=data)
+        r = requests.get(url, headers=self.headers) if data is None else requests.post(url, data=data, headers=self.headers)
 
         soup = BeautifulSoup(r.text, 'lxml-xml')
 
