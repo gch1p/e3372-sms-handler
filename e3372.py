@@ -6,11 +6,18 @@ from bs4 import BeautifulSoup
 from bs4.element import Tag
 
 
-def build_request(params: dict):
+def build_request(params: dict, depth=1):
+    if depth == 1:
+        return build_request({
+            'request': params
+        }, depth=depth+1)
+
     items = []
     for key, value in params.items():
+        if isinstance(value, dict):
+            value = build_request(value, depth=depth+1)
         items.append(f'<{key}>{value}</{key}>')
-    return '<request>'+''.join(items)+'</request>'
+    return ''.join(items)
 
 
 def xml2dict(node):
@@ -69,8 +76,18 @@ class WebAPI:
         return sms_list
 
 
-    def send_sms(self):
-        pass
+    def send_sms(self, phone: str, content: str):
+        return self.request('sms/send-sms', build_request({
+            'Index': -1,
+            'Phones': {
+                'Phone': phone,
+            },
+            'Sca': '',
+            'Content': content,
+            'Length': len(content),
+            'Reserved': 1,
+            'Date': -1
+        }))
 
     def dataswitch(self, on=True):
         return self.request('dialup/mobile-dataswitch', data=build_request({

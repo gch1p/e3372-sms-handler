@@ -8,16 +8,20 @@ def main():
     parser.add_argument('--ip',
                         default='192.168.8.1',
                         help='Modem IP address')
+    parser.add_argument('--phone')
+    parser.add_argument('--content')
     args = parser.parse_args()
 
     client = WebAPI(args.ip)
     client.auth()
 
-    info = client.device_information()
-    signal = client.device_signal()
+    # info = client.device_information()
+    # signal = client.device_signal()
 
-    pprint(info)
-    pprint(signal)
+    result = client.send_sms(phone=args.phone,
+                             content=args.content)
+    print(result)
+    print(type(result))
 
     # messages = client.get_sms()
     #
