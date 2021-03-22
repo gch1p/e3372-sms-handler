@@ -98,7 +98,7 @@ class SMS:
 
     def timestamp(self):
         # input example: 2020-08-11 14:55:51
-        return int(datetime.strptime(self.date, '%Y-%m-%d %H-%M-%S').strftime("%s"))
+        return int(datetime.strptime(self.date, '%Y-%m-%d %H:%M:%S').strftime("%s"))
 
 
 class APIError(Exception):
