@@ -83,7 +83,7 @@ class E3372:
             if message_node:
                 message = message_node.get_text()
 
-            raise E3372Error(code, message=message)
+            raise APIError(code, message=message)
 
         return soup.find('response')
 
@@ -101,7 +101,7 @@ class SMS:
         return int(datetime.strptime(self.date, '%Y-%m-%d %H-%M-%S').strftime("%s"))
 
 
-class E3372Error(Exception):
+class APIError(Exception):
     def __init__(self, error_code, message='', *args, **kwargs):
         self.error_code = error_code
         self.traceback = sys.exc_info()
