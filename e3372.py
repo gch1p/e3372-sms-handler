@@ -107,8 +107,8 @@ class E3372Error(Exception):
         self.traceback = sys.exc_info()
 
         try:
-            msg = '[{0}] {1}'.format(error_code.name, message.format(*args, **kwargs))
+            msg = '[{0}] {1}'.format(error_code, message.format(*args, **kwargs))
         except (IndexError, KeyError):
-            msg = '[{0}] {1}'.format(error_code.name, message)
+            msg = '[{0}] {1}'.format(error_code, message)
 
         super().__init__(msg)
