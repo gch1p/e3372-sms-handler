@@ -8,10 +8,10 @@ class E3372:
         pass
 
     def auth(self):
-        pass
+        soup = self._request("webserver/SesTokInfo")
+        print(soup)
 
     def _request(self, endpoint: str, method='GET'):
-        url = f"http://{self.ip}/api/webserver/SesTokInfo"
+        url = f"http://{self.ip}/api/{endpoint}"
         r = requests.get(url) if method == 'GET' else requests.post(url)
-        soup = BeautifulSoup(r.text, "lxml")
-        print(soup)
+        return BeautifulSoup(r.text, "lxml")
