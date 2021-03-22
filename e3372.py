@@ -1,4 +1,5 @@
 import requests
+import sys
 
 from datetime import datetime
 from bs4 import BeautifulSoup
@@ -27,13 +28,13 @@ class E3372:
         self.headers['__RequestVerificationToken'] = token
         self.headers['Content-Type'] = 'text/xml'
 
-    def device_information(self):
-        response = self.request('device/information')
-        print(response)
-
-    def device_signal(self):
-        response = self.request('device/signal')
-        print(response)
+    # def device_information(self):
+    #     response = self.request('device/information')
+    #     print(response)
+    #
+    # def device_signal(self):
+    #     response = self.request('device/signal')
+    #     print(response)
 
     def get_sms(self, count=10, page=1):
         request = build_request({
@@ -65,7 +66,27 @@ class E3372:
     def request(self, endpoint: str, data=None):
         url = f'http://{self.ip}/api/{endpoint}'
         r = requests.get(url) if data is None else requests.post(url, data=data)
-        return BeautifulSoup(r.text, 'lxml-xml').find('response')
+
+        soup = BeautifulSoup(r.text, 'lxml-xml')
+
+        error = soup.find('error')
+        if error:
+            code = 0
+            message = ''
+
+            code_node = error.find('code')
+            message_node = error.find('message')
+
+            if code_node:
+                code = int(code_node.get_text())
+
+            if message_node:
+                message = message_node.get_text()
+
+            raise E3372Error(code, message=message)
+
+        return soup.find('response')
+
 
 
 class SMS:
@@ -78,3 +99,16 @@ class SMS:
     def timestamp(self):
         # input example: 2020-08-11 14:55:51
         return int(datetime.strptime(self.date, '%Y-%m-%d %H-%M-%S').strftime("%s"))
+
+
+class E3372Error(Exception):
+    def __init__(self, error_code, message='', *args, **kwargs):
+        self.error_code = error_code
+        self.traceback = sys.exc_info()
+
+        try:
+            msg = '[{0}] {1}'.format(error_code.name, message.format(*args, **kwargs))
+        except (IndexError, KeyError):
+            msg = '[{0}] {1}'.format(error_code.name, message)
+
+        super().__init__(msg)
