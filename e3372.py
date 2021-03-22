@@ -12,7 +12,7 @@ def build_request(params: dict):
     return '<request>'+''.join(items)+'</request>'
 
 
-class E3372:
+class WebAPI:
     def __init__(self, ip: str):
         self.ip = ip
         self.headers = {}

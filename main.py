@@ -1,6 +1,6 @@
 from argparse import ArgumentParser
 from pprint import pprint
-from e3372 import E3372
+from e3372 import WebAPI
 
 
 def main():
@@ -10,7 +10,7 @@ def main():
                         help='Modem IP address')
     args = parser.parse_args()
 
-    client = E3372(args.ip)
+    client = WebAPI(args.ip)
     client.auth()
 
     messages = client.get_sms()
