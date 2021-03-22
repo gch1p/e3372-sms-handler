@@ -66,6 +66,7 @@ class WebAPI:
     def request(self, endpoint: str, data=None):
         url = f'http://{self.ip}/api/{endpoint}'
         r = requests.get(url, headers=self.headers) if data is None else requests.post(url, data=data, headers=self.headers)
+        r.encoding = 'utf-8'
 
         soup = BeautifulSoup(r.text, 'lxml-xml')
 
