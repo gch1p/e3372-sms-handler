@@ -2,16 +2,8 @@
 
 ## Requirements
 
-
-    TODO
-
-
-## Installation
-
-    python3 -m venv venv
-    . ./venv/bin/activate
-    pip install wheel
-    pip install -r requirements.txt
+* lxml (python3-lxml)
+* see `requirements.txt`
 
 ## License
 

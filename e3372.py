@@ -1,5 +1,15 @@
 import requests
+
+from datetime import datetime
 from bs4 import BeautifulSoup
+
+
+def build_request(params: dict):
+    items = []
+    for key, value in params.items():
+        items.append(f'<{key}>{value}</{key}>')
+    return '<request>'+''.join(items)+'</request>'
+
 
 class E3372:
     def __init__(self, ip: str):
@@ -25,7 +35,46 @@ class E3372:
         response = self.request('device/signal')
         print(response)
 
-    def request(self, endpoint: str, method='GET'):
+    def get_sms(self, count=10, page=1):
+        request = build_request({
+            'PageIndex': page,
+            'ReadCount': count,
+            'BoxType': 1,
+            'SortType': 0,
+            'Ascending': 0,
+            'UnreadPreferred': 1
+        })
+        response = self.request('sms/sms-list', data=request)
+
+        sms_list = []
+        for message in response.find_all('Message'):
+            sms = SMS(
+                index=int(message.find('Index').get_text()),
+                phone=message.find('Phone').get_text(),
+                content=message.find('Content').get_text(),
+                date=message.find('Date').get_text()
+            )
+            sms_list.append(sms)
+
+        return sms_list
+
+
+    def send_sms(self):
+        pass
+
+    def request(self, endpoint: str, data=None):
         url = f'http://{self.ip}/api/{endpoint}'
-        r = requests.get(url) if method == 'GET' else requests.post(url)
-        return BeautifulSoup(r.text, 'xml').find('response')
+        r = requests.get(url) if data is None else requests.post(url, data=data)
+        return BeautifulSoup(r.text, 'lxml-xml').find('response')
+
+
+class SMS:
+    def __init__(self, index=None, phone=None, content=None, date=None):
+        self.index = index
+        self.phone = phone
+        self.content = content
+        self.date = date
+
+    def timestamp(self):
+        # input example: 2020-08-11 14:55:51
+        return int(datetime.strptime(self.date, '%Y-%m-%d %H-%M-%S').strftime("%s"))
