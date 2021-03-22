@@ -3,7 +3,7 @@
 ## Requirements
 
 
-    sudo apt install libxslt1-dev libxml2-dev
+    TODO
 
 
 ## Installation
