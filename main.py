@@ -16,8 +16,8 @@ def main():
     info = client.device_information()
     signal = client.device_signal()
 
-    print(info)
-    print(signal)
+    pprint(info)
+    pprint(signal)
 
     # messages = client.get_sms()
     #

@@ -3,6 +3,7 @@ import sys
 
 from datetime import datetime
 from bs4 import BeautifulSoup
+from bs4.element import Tag
 
 
 def build_request(params: dict):
@@ -10,6 +11,16 @@ def build_request(params: dict):
     for key, value in params.items():
         items.append(f'<{key}>{value}</{key}>')
     return '<request>'+''.join(items)+'</request>'
+
+
+def xml2dict(node):
+    data = {}
+
+    for c in node.children:
+        if isinstance(c, Tag):
+            data[c.name] = c.get_text()
+
+    return data
 
 
 class WebAPI:
@@ -29,11 +40,10 @@ class WebAPI:
         self.headers['Content-Type'] = 'text/xml'
 
     def device_information(self):
-        return self.request('device/information')
+        return xml2dict(self.request('device/information'))
 
     def device_signal(self):
-        return self.request('device/signal')
-
+        return xml2dict(self.request('device/signal'))
 
     def get_sms(self, count=10, page=1):
         request = build_request({
