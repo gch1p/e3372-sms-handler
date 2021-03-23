@@ -1,6 +1,10 @@
 import requests
 import sys
+import os
+import json
+import traceback
 
+from typing import Callable
 from datetime import datetime
 from bs4 import BeautifulSoup
 from bs4.element import Tag
@@ -10,12 +14,12 @@ def build_request(params: dict, depth=1):
     if depth == 1:
         return build_request({
             'request': params
-        }, depth=depth+1)
+        }, depth=depth + 1)
 
     items = []
     for key, value in params.items():
         if isinstance(value, dict):
-            value = build_request(value, depth=depth+1)
+            value = build_request(value, depth=depth + 1)
         items.append(f'<{key}>{value}</{key}>')
     return ''.join(items)
 
@@ -75,7 +79,6 @@ class WebAPI:
 
         return sms_list
 
-
     def send_sms(self, phone: str, content: str):
         return self.request('sms/send-sms', build_request({
             'Index': -1,
@@ -87,7 +90,7 @@ class WebAPI:
             'Length': len(content),
             'Reserved': 1,
             'Date': -1
-        }))
+        })).get_text() == 'OK'
 
     def dataswitch(self, on=True):
         return self.request('dialup/mobile-dataswitch', data=build_request({
@@ -101,7 +104,8 @@ class WebAPI:
 
     def request(self, endpoint: str, data=None):
         url = f'http://{self.ip}/api/{endpoint}'
-        r = requests.get(url, headers=self.headers) if data is None else requests.post(url, data=data, headers=self.headers)
+        r = requests.get(url, headers=self.headers) if data is None else requests.post(url, data=data,
+                                                                                       headers=self.headers)
         r.encoding = 'utf-8'
 
         soup = BeautifulSoup(r.text, 'lxml-xml')
@@ -120,10 +124,57 @@ class WebAPI:
             if message_node:
                 message = message_node.get_text()
 
-            raise APIError(code, message=message)
+            raise WebAPIError(code, message=message)
 
         return soup.find('response')
 
+
+class SMSHandler:
+    def __init__(self, api: WebAPI, config_dir: str):
+        self.api = api
+
+        if not os.path.exists(config_dir):
+            os.makedirs(config_dir)
+
+        self.config_dir = config_dir
+        self.state_file = os.path.join(config_dir, 'state.dat')
+
+    def read_state(self):
+        if not os.path.exists(self.state_file):
+            default_state = {
+                'last_timestamp': 0
+            }
+            self.write_state(default_state)
+            return default_state
+
+        with open(self.state_file, 'r') as f:
+            return json.loads(f.read())
+
+    def write_state(self, state: dict):
+        with open(self.state_file, 'w') as f:
+            f.write(json.dumps(state))
+
+    def process(self, handler: Callable):
+        state = self.read_state()
+        messages = self.api.get_sms(10, 1)
+        max_ts = state['last_timestamp']
+        for sms in messages:
+            ts = sms.timestamp()
+            if state['last_timestamp'] > ts:
+                continue
+
+            if ts > max_ts:
+                max_ts = ts
+
+            try:
+                handler(sms)
+            except:
+                traceback.print_exc()
+                continue
+
+        if max_ts != state['last_timestamp']:
+            state['last_timestamp'] = max_ts
+            self.write_state(state)
 
 
 class SMS:
@@ -138,7 +189,7 @@ class SMS:
         return int(datetime.strptime(self.date, '%Y-%m-%d %H:%M:%S').strftime("%s"))
 
 
-class APIError(Exception):
+class WebAPIError(Exception):
     def __init__(self, error_code, message='', *args, **kwargs):
         self.error_code = error_code
         self.traceback = sys.exc_info()
