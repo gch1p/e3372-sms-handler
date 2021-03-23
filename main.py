@@ -45,6 +45,7 @@ def sms_handler(sms: SMS, api: WebAPI):
 
             buf = ' '.join(buf)
             if buf != '':
+                print('going to send this: ' + buf)
                 api.send_sms(phone=trusted_phone, content=buf)
 
         elif text == 'switch it off':
