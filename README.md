@@ -5,7 +5,7 @@ you to do something when SMS arrives.
 
 ## Requirements
 
-* lxml (`apt install python3-lxml` or something like it)
+* lxml (`apt install python3-lxml` or something like that)
 * see `requirements.txt`
 
 ## Usage
