@@ -12,15 +12,15 @@ trusted_phone = ''
 def sms_handler(sms: SMS, api: WebAPI):
     global trusted_phone
 
-    print(f'from: {sms.phone}')
-    print(f'text: {sms.text}')
+    # print(f'from: {sms.phone}')
+    # print(f'text: {sms.text}')
 
     if sms.phone == trusted_phone:
         text = sms.text.lower().strip()
-        if text == 'you shall reboot':
+        if text == 'you shall reboot!':
             api.reboot()
 
-        elif text == 'show me some status':
+        elif text == 'yo, get me some status':
             info = api.device_information()
             signal = api.device_signal()
             buf = []
@@ -36,6 +36,12 @@ def sms_handler(sms: SMS, api: WebAPI):
             buf = ' '.join(buf)
             if buf != '':
                 api.send_sms(phone=trusted_phone, content=buf)
+
+        elif text == 'switch it off':
+            api.dataswitch(False)
+
+        elif text == 'switch it on':
+            api.dataswitch(True)
 
 
 def main():
