@@ -162,7 +162,7 @@ class SMSHandler:
         messages = self.api.get_sms(10, 1)
         for sms in reversed(messages):
             ts = sms.timestamp()
-            if state['last_timestamp'] > ts:
+            if state['last_timestamp'] >= ts:
                 continue
 
             if ts > max_ts:
