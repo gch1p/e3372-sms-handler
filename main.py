@@ -61,22 +61,6 @@ def main():
     smshandler = SMSHandler(api=client, config_dir=config_dir)
     smshandler.process(sms_handler)
 
-    # info = client.device_information()
-    # signal = client.device_signal()
-
-    result = client.send_sms(phone=args.phone,
-                             content=args.content)
-    print(result)
-    print(type(result))
-
-    # messages = client.get_sms()
-    #
-    # for m in messages:
-    #     print(f"phone:   {m.phone}")
-    #     print(f"date:    {m.date} ({m.timestamp()})")
-    #     print(f"content: {m.content}")
-    #     print('-----')
-
 
 if __name__ == '__main__':
     main()
