@@ -27,6 +27,7 @@ def sms_handler(sms: SMS, api: WebAPI):
         text = sms.text.lower().strip()
         if text == 'you shall reboot!':
             print('bye bye...')
+            api.auth()
             api.reboot()
 
         elif text == 'yo, get me some status':
@@ -53,10 +54,12 @@ def sms_handler(sms: SMS, api: WebAPI):
 
         elif text == 'switch it off':
             print('switching it off')
+            api.auth()
             api.dataswitch(False)
 
         elif text == 'switch it on':
             print('switching it on')
+            api.auth()
             api.dataswitch(True)
 
 
