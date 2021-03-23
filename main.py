@@ -47,6 +47,7 @@ def sms_handler(sms: SMS, api: WebAPI):
             buf = ' '.join(buf)
             if buf != '':
                 print('going to send this: ' + buf)
+                # we need new api key it seems :O
                 api.auth()
                 api.send_sms(phone=trusted_phone, content=buf)
 
