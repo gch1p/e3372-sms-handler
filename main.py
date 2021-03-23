@@ -31,6 +31,7 @@ def sms_handler(sms: SMS, api: WebAPI):
 
         elif text == 'yo, get me some status':
             print('gathering status')
+            api.auth()
             info = api.device_information()
             signal = api.device_signal()
             buf = []
@@ -46,6 +47,7 @@ def sms_handler(sms: SMS, api: WebAPI):
             buf = ' '.join(buf)
             if buf != '':
                 print('going to send this: ' + buf)
+                api.auth()
                 api.send_sms(phone=trusted_phone, content=buf)
 
         elif text == 'switch it off':
