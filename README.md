@@ -14,10 +14,10 @@ You need at least Python 3.6 or so.
 
 See `main.py` and adjust the `sms_handler` function to your needs.
 
-The script should be launched periodically by cron. This line in crontab would
-launch the script every 10 minutes:
+The script should be launched periodically by cron. For example, put this to the 
+crontab to launch it every 15 minutes:
 ```cron
-*/10 * * * * python3 /path/to/e3372-py/main.py --trusted-phone 79001234567
+*/15 * * * * python3 /path/to/e3372-py/main.py --trusted-phone +79001234567 > /dev/null
 ```
 
 ## License
