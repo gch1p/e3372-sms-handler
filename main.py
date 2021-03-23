@@ -12,15 +12,25 @@ trusted_phone = ''
 def sms_handler(sms: SMS, api: WebAPI):
     global trusted_phone
 
-    # print(f'from: {sms.phone}')
-    # print(f'text: {sms.text}')
+    print(f'from={sms.phone}, date={sms.date}, text={sms.text}')
 
-    if sms.phone == trusted_phone:
+    # just in case
+    phone = sms.phone
+    if phone.startswith('8') and len(phone) == 11:
+        phone = '+7' + phone[1:]
+    elif phone.startswith('7') and len(phone) == 11:
+        phone = '+' + phone
+
+    if phone == trusted_phone:
+        print('this is a trusted phone, processing...')
+
         text = sms.text.lower().strip()
         if text == 'you shall reboot!':
+            print('bye bye...')
             api.reboot()
 
         elif text == 'yo, get me some status':
+            print('gathering status')
             info = api.device_information()
             signal = api.device_signal()
             buf = []
@@ -38,9 +48,11 @@ def sms_handler(sms: SMS, api: WebAPI):
                 api.send_sms(phone=trusted_phone, content=buf)
 
         elif text == 'switch it off':
+            print('switching it off')
             api.dataswitch(False)
 
         elif text == 'switch it on':
+            print('switching it on')
             api.dataswitch(True)
 
 
