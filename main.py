@@ -1,11 +1,12 @@
 import pathlib
+import os
 
 from argparse import ArgumentParser
 from pprint import pprint
 from e3372 import WebAPI, SMSHandler, SMS
 
 
-config_dir = pathlib.Path.home() + '/.e3372-sms-handler'
+config_dir = os.path.join(pathlib.Path.home(), '.e3372-sms-handler')
 
 
 def sms_handler(sms: SMS):
