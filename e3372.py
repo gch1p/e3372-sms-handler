@@ -72,7 +72,7 @@ class WebAPI:
             sms = SMS(
                 index=int(message.find('Index').get_text()),
                 phone=message.find('Phone').get_text(),
-                content=message.find('Content').get_text(),
+                text=message.find('Content').get_text(),
                 date=message.find('Date').get_text()
             )
             sms_list.append(sms)
@@ -156,9 +156,11 @@ class SMSHandler:
 
     def process(self, handler: Callable):
         state = self.read_state()
-        messages = self.api.get_sms(10, 1)
         max_ts = state['last_timestamp']
-        for sms in messages:
+
+        # loop backwards
+        messages = self.api.get_sms(10, 1)
+        for sms in reversed(messages):
             ts = sms.timestamp()
             if state['last_timestamp'] > ts:
                 continue
@@ -167,7 +169,7 @@ class SMSHandler:
                 max_ts = ts
 
             try:
-                handler(sms)
+                handler(sms, self.api)
             except:
                 traceback.print_exc()
                 continue
@@ -178,10 +180,10 @@ class SMSHandler:
 
 
 class SMS:
-    def __init__(self, index=None, phone=None, content=None, date=None):
+    def __init__(self, index=None, phone=None, text=None, date=None):
         self.index = index
         self.phone = phone
-        self.content = content
+        self.text = text
         self.date = date
 
     def timestamp(self):
